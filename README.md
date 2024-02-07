@@ -5,135 +5,70 @@ tp2 of esir lab on data managment
 
 ### Stations with Most Outgoing Trips:
 
-|station_name|count|
-|---|---|
-| Grove St PATH | 1625 |
-| Hoboken Terminal - River St & Hudson Pl | 1490 |
-| Sip Ave | 1208 |
-| Hoboken Terminal - Hudson St & Hudson Pl | 1129 |
-| Hamilton Park | 917 |
-| Newport PATH | 893 |
-| City Hall - Washington St & 1 St | 853 |
-| South Waterfront Walkway - Sinatra Dr & 1 St | 837 |
-| Newport Pkwy | 806 |
-| 8 St & Washington St | 745 |
+| station_name                                 | count |
+|----------------------------------------------|-------|
+| Grove St PATH                                | 1625  |
+| Hoboken Terminal - River St & Hudson Pl      | 1490  |
+| Sip Ave                                      | 1208  |
+| Hoboken Terminal - Hudson St & Hudson Pl     | 1129  |
+| Hamilton Park                                | 917   |
+| Newport PATH                                 | 893   |
+| City Hall - Washington St & 1 St             | 853   |
+| South Waterfront Walkway - Sinatra Dr & 1 St | 837   |
+| Newport Pkwy                                 | 806   |
+| 8 St & Washington St                         | 745   |
 
 
 ### station with Most Incoming Trips:
 
-|station_name|count|
-|---|---|
-| Grove St PATH | 1625 |
-| Hoboken Terminal - River St & Hudson Pl | 1490 |
-| Hoboken Terminal - Hudson St & Hudson Pl | 1129 |
-| Sip Ave | 1208 |
-| Hamilton Park | 917 |
-| City Hall - Washington St & 1 St | 853 |
-| Newport PATH | 893 |
-| South Waterfront Walkway - Sinatra Dr & 1 St | 837 |
-| Newport Pkwy | 806 |
-| Hoboken Ave at Monmouth St | 667 |
+| station_name                                 | count |
+|----------------------------------------------|-------|
+| Grove St PATH                                | 1625  |
+| Hoboken Terminal - River St & Hudson Pl      | 1490  |
+| Hoboken Terminal - Hudson St & Hudson Pl     | 1129  |
+| Sip Ave                                      | 1208  |
+| Hamilton Park                                | 917   |
+| City Hall - Washington St & 1 St             | 853   |
+| Newport PATH                                 | 893   |
+| South Waterfront Walkway - Sinatra Dr & 1 St | 837   |
+| Newport Pkwy                                 | 806   |
+| Hoboken Ave at Monmouth St                   | 667   |
 
 ## 3 Proximité entre les stations
 
-2852488306
-20831324
-1829264903
-2317966963
-3758876234
-94097707
-1087551869
-444767924
-2187439516
-3204006817
-2389660876
-3106674982
-2660920285
-3075335825
-1491901668
-1066694061
-3037009465
-2957245744
-4195261281
-3227057717
-2423337243
-3815922404
-3162449936
-2317958423
-2043696041
-2672553465
-1066162089
-2914592942
-2699894813
-1755249966
-2868917302
-2957545062
-2155791859
-3437707977
-4097959634
-639314359
-2364497029
-375676142
-852091722
-1348710928
-3729706041
-578256600
-3148861701
-2009132307
-2126329969
-245194176
-3286775980
-1053846134
-2578702428
-2537595265
-1925358980
-1178992149
-3253813931
-555999007
-180644458
-1624497230
-3812658469
-3642659462
-1208422119
-2740300505
-838260174
-4200830147
-858472710
-1549718166
-953417685
-3640882938
-2064726370
-3815963900
-108945508
-2806834118
-4292828255
-2584889172
-1392002253
-3808540238
-2703139569
-3149592838
-163314229
-2555868310
-926534974
-315146472
-977492900
-0
-1946953393
-3004121661
-3515790164
-1354324787
-557718764
-1082163915
-1618394786
-1615682952
-1008954473
-4063029650
-3108982986
-279941842
-3917382145
-1833638729
-686083075
-517397000
-3877402064
-3205222658
+The nearest in distance station to JC013 is City Hall (ID : JC003) with a distance of 0.15 kilometers.
+
+The nearest in time station to JC013 is City Hall (ID : JC003) with a duration of 93.0 seconds.
+
+## 4 Plus court chemin
+Top 10 des stations les plus proches de JC013 :
+
+| station_name          | distance (km) |
+|-----------------------|---------------|
+| City Hall - Barrow St | 0.15          |
+| Grove St PATH         | 0.16          |
+| Manila & 1st          | 0.22          |
+| Hamilton Park         | 0.43          |
+| Jersey & 3rd          | 0.44          |
+| Newark Ave            | 0.44          |
+| Jersey & 6th St       | 0.45          |
+| Columbus Drive        | 0.45          |
+| Morris Canal          | 0.48          |
+| Van Vorst Park        | 0.56          |
+
+
+Top 10 des stations les plus proches de JC013 :
+
+| station_name          | distance | path           |
+|-----------------------|----------|----------------|
+| City Hall - Barrow St | 0.15     | JC013 -> JC003 |
+| Grove St PATH         | 0.16     | JC013 -> JC005 |
+| Manila & 1st          | 0.22     | JC013 -> JC082 |
+| Hamilton Park         | 0.43     | JC013 -> JC009 |
+| Jersey & 3rd          | 0.44     | JC013 -> JC074 |
+| Newark Ave            | 0.44     | JC013 -> JC032 |
+| Jersey & 6th St       | 0.45     | JC013 -> JC027 |
+| Columbus Drive        | 0.45     | JC013 -> JC014 |
+| Morris Canal          | 0.48     | JC013 -> JC072 |
+| Van Vorst Park        | 0.56     | JC013 -> JC035 |
 

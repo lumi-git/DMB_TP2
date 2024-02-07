@@ -6,8 +6,6 @@ import scala.math._
 
 object CityBike extends App{
   case class Station(stationId: String, name: String, long: Double, lat: Double)
-
-  case class StationWithDistance(station: Station, distance: Double)
   case class Trip(startStationName: String, endStationName: String, dateStartMillis: Long, dateEndMillis: Long)
 
   case class Dataset(
@@ -58,10 +56,7 @@ object CityBike extends App{
       }
   }
 
-
-  /**
-   * 1.1 Préparation des données
-   */
+  println(" ============== Exercice 1.1 ============== ")
 
   //Read file
   val sparkConf = new SparkConf().setAppName("graphXTP").setMaster("local[1]")
@@ -70,13 +65,9 @@ object CityBike extends App{
   val DataFromFile = sc.textFile("data.csv")
   val DatasetRDD: RDD[Dataset] = DataFromFile.flatMap(fromCsvLine)
 
+  println(" ======= Exercice 1.1 - show dataset  ======= ")
   DatasetRDD.take(10).foreach(println)
 
-  /**
-   * 1.2 - Création du premier graphes
-   */
-
-  // Construire l'RDD de nœuds (stations) et l'RDD d'arêtes (trajets)
   val stationsRDD: RDD[(VertexId, Station)] = DatasetRDD.flatMap(dataset => Seq(
     (hash(dataset.startStationId), Station(dataset.endStationName, dataset.startStationName, dataset.startLng , dataset.startLat)),
     (hash(dataset.endStationId), Station(dataset.startStationName, dataset.endStationName, dataset.endLng, dataset.endLat))
@@ -97,25 +88,14 @@ object CityBike extends App{
     name.hashCode.toLong & 0xFFFFFFFFL
   }
 
-  /**
-   * 1.3 - Extraction of Subgraph and Analysis
-   */
 
-  // Function to check if a date falls within the specified range
+  println(" ============== Exercice 1.2 ============== ")
   def isInDateRange(startMillis: Long, endMillis: Long): Boolean = {
     val startDate = new java.text.SimpleDateFormat("yyyy-MM-dd").parse("2021-12-05").getTime
     val endDate = new java.text.SimpleDateFormat("yyyy-MM-dd").parse("2021-12-25").getTime
 
     startMillis >= startDate && endMillis <= endDate
   }
-
-  //print the station if the stationID is JC JC013
-  println(hash("JC013"))
-  for (vert <- bikeGraph.vertices) {
-      println(vert._2.stationId + " " + vert._1 + " unhashed" + hashtable.get(vert._1))
-  }
-
-
 
   // Extract subgraph based on the time interval
   val subGraph = bikeGraph.subgraph(epred = edge => isInDateRange(edge.attr.dateStartMillis, edge.attr.dateEndMillis))
@@ -149,39 +129,26 @@ object CityBike extends App{
   }
 
 
-  // 1.3 - Station proximity
-  // Question 1.3.1
-  // Trouvez et affichez la station la plus proche de la station JC013 tel que la distance du trajet (relation)
-  // entre les deux stations soit minimale. (aggregateMessage)
-  // (Pour le calcul de distance, utilisez la fonction getDistKilometers).
-
-
+  println(" ============== Exercice 1.3 ============== ")
   val jc013Id = hash("JC013")
   val helper = new HelpfulFunctions()
-
-  // Assuming jc013Id is correctly defined as the hashed value of "JC013"
-
-  // Define a message class for minimum distance, excluding self-comparisons
   case class MinDistance(minDist: Double = Double.MaxValue, stationId: VertexId = -1,stationName: String)
 
-  // Aggregate messages to find the nearest station to JC013 by minimal distance, excluding JC013 itself
   val nearestInDistanceToJC013 = bikeGraph.aggregateMessages[MinDistance](
     triplet => {
-      // Calculate distance if the current edge does not involve JC013 talking to itself
       if ((triplet.srcId != jc013Id || triplet.dstId != jc013Id) && (triplet.srcId == jc013Id || triplet.dstId == jc013Id)) {
         val dist = helper.getDistKilometers(triplet.srcAttr.lat, triplet.srcAttr.long, triplet.dstAttr.lat, triplet.dstAttr.long)
         if (triplet.srcId == jc013Id) {
-          triplet.sendToDst(MinDistance(dist, triplet.dstId,triplet.dstAttr.name)) // Send distance to destination only if it's not JC013
+          triplet.sendToDst(MinDistance(dist, triplet.dstId,triplet.dstAttr.name))
         }
         if (triplet.dstId == jc013Id) {
-          triplet.sendToSrc(MinDistance(dist, triplet.srcId,triplet.srcAttr.name)) // Send distance to source only if it's not JC013
+          triplet.sendToSrc(MinDistance(dist, triplet.srcId,triplet.srcAttr.name))
         }
       }
     },
-    (a, b) => if (a.minDist < b.minDist) a else b // Choose the message with the minimum distance
+    (a, b) => if (a.minDist < b.minDist) a else b
   )
 
-  // Find and print the nearest station excluding JC013 itself
   if (nearestInDistanceToJC013.isEmpty()) {
     println("No stations found or no distances calculated.")
   } else {
@@ -195,27 +162,107 @@ object CityBike extends App{
 
   val nearestInDurationToJC013 = bikeGraph.aggregateMessages[MinDuration](
     triplet => {
-      // Calculate distance if the current edge does not involve JC013 talking to itself
       if ((triplet.srcId != jc013Id || triplet.dstId != jc013Id) && (triplet.srcId == jc013Id || triplet.dstId == jc013Id)) {
         val timeDiff = helper.getTimeDifference(triplet.attr.dateStartMillis, triplet.attr.dateEndMillis)
         if (triplet.srcId == jc013Id) {
-          triplet.sendToDst(MinDuration(timeDiff, triplet.dstId,triplet.dstAttr.name)) // Send distance to destination only if it's not JC013
+          triplet.sendToDst(MinDuration(timeDiff, triplet.dstId,triplet.dstAttr.name))
         }
         if (triplet.dstId == jc013Id) {
-          triplet.sendToSrc(MinDuration(timeDiff, triplet.srcId,triplet.srcAttr.name)) // Send distance to source only if it's not JC013
+          triplet.sendToSrc(MinDuration(timeDiff, triplet.srcId,triplet.srcAttr.name))
         }
       }
     },
-    (a, b) => if (a.minDur < b.minDur) a else b // Choose the message with the minimum distance
+    (a, b) => if (a.minDur < b.minDur) a else b
   )
 
   if (nearestInDurationToJC013.isEmpty()) {
     println("No stations found or no distances calculated.")
   } else {
     val nearestStation = nearestInDurationToJC013.filter(_._1 != jc013Id).sortBy(_._2.minDur, ascending = true).first()
-    println(s"The nearest in time station to JC013 is ${nearestStation._2.stationName} (ID : ${hashtable(nearestStation._2.stationId)}) with a duration of ${nearestStation._2.minDur} seconds.")
+    println(s"The nearest in time station to JC013 is ${nearestStation._2.stationName} (ID : ${hashtable(nearestStation._2.stationId)}) with a duration of ${nearestStation._2.minDur/1000} seconds.")
   }
 
+
+  println(" ============== Exercice 1.4 ============== ")
+  println(" ======= Exercice 1.4 - Partie 1 ======= ")
+  case class StationWithDistance(station: Station, distance: Double)
+
+  val initialGraph = bikeGraph.mapVertices((id, station) =>
+    if (id == jc013Id) StationWithDistance(station, 0)
+    else StationWithDistance(station, Double.MaxValue)
+  )
+
+  val pregelGraph = initialGraph.pregel(Double.MaxValue)(
+    (id, state, newDist) => StationWithDistance(state.station, math.min(state.distance, newDist)),
+    triplet => {
+      if (triplet.srcAttr.station != null && triplet.dstAttr.station != null) {
+        val dist = helper.getDistKilometers(
+          triplet.srcAttr.station.lat, triplet.srcAttr.station.long,
+          triplet.dstAttr.station.lat, triplet.dstAttr.station.long
+        )
+        if (triplet.srcAttr.distance + dist < triplet.dstAttr.distance) {
+          Iterator((triplet.dstId, triplet.srcAttr.distance + dist))
+        } else {
+          Iterator.empty
+        }
+      } else {
+        Iterator.empty
+      }
+    },
+    (a, b) => math.min(a, b)
+  )
+
+  val distancesFromJC013 = pregelGraph.vertices
+    .filter { case (id, StationWithDistance(station, distance)) => id != jc013Id && distance < Double.MaxValue }
+    .sortBy { case (id, StationWithDistance(station, distance)) => distance }
+    .take(10)
+
+  println("Top 10 des stations les plus proches de JC013 :")
+  distancesFromJC013.foreach {
+    case (id, StationWithDistance(station, distance)) =>
+      println(s"${station.name} à une distance de ${distance.formatted("%.2f")} km")
+  }
+
+  println(" ======= Exercice 1.4 - Partie 2 ======= ")
+  case class StationWithPath(station: Station, distance: Double, path: List[Long])
+
+  val initialGraphWithPath = bikeGraph.mapVertices { (id, station) =>
+    if (id == jc013Id) StationWithPath(station, 0, List(jc013Id))
+    else StationWithPath(station, Double.MaxValue, List())
+  }
+
+  val pregelGraphWithPath = initialGraphWithPath.pregel((Double.MaxValue, List[Long]()))(
+    (id, oldValue, message) => {
+      if (message._1 < oldValue.distance) {
+        StationWithPath(oldValue.station, message._1, message._2)
+      } else {
+        oldValue
+      }
+    },
+    triplet => {
+      val newDist = triplet.srcAttr.distance + helper.getDistKilometers(
+        triplet.srcAttr.station.lat, triplet.srcAttr.station.long,
+        triplet.dstAttr.station.lat, triplet.dstAttr.station.long)
+      if (newDist < triplet.dstAttr.distance) {
+        Iterator((triplet.dstId, (newDist, triplet.srcAttr.path :+ triplet.dstId)))
+      } else {
+        Iterator.empty
+      }
+    },
+    (a, b) => if (a._1 < b._1) a else b
+  )
+
+  val distancesFromJC013WithPath = pregelGraphWithPath.vertices
+    .filter { case (id, StationWithPath(station, distance, path)) => id != jc013Id && distance < Double.MaxValue }
+    .sortBy { case (id, StationWithPath(station, distance, path)) => distance }
+    .take(10)
+
+  println("Top 10 des stations les plus proches de JC013 :")
+  distancesFromJC013WithPath.foreach {
+    case (id, StationWithPath(station, distance, path)) =>
+      val pathStations = path.map(hashtable.getOrElse(_, "Unknown Station")).mkString(" -> ")
+      println(s"${station.name} est à une distance de ${distance.formatted("%.2f")} km via le chemin $pathStations")
+  }
 
 
 }
