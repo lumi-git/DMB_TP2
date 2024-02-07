@@ -25,4 +25,8 @@ class HelpfulFunctions {
     c*r
   }
 
+  def getTimeDifference(start: Long, end: Long): Long = {
+    end - start
+  }
+
 }
